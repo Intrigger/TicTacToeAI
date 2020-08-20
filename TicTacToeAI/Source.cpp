@@ -271,6 +271,9 @@ int main() {
 	player.New();				//Генерируем веса 
 
 	for (int g = 0; g < gamesN; g++) {	//Для каждой игры
+
+		int wrongChoice = 0;	//счетчик того, сколько раз ИИ выбрал занятую клеточку
+
 		//Копируем наше поле, т.к. новая игра		
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
@@ -324,7 +327,7 @@ int main() {
 				//Если выбрали занятую клеточку
 				while (field[maxValueIndex / 3][maxValueIndex % 3] != 0) {
 
-					cout << "Wrong cell! ";
+					wrongChoice++;
 
 					//Пока выбираем занятую клеточку, тренируем нейросеть
 					//не выбирать занятые клеточки
@@ -364,19 +367,9 @@ int main() {
 			if (nowGoes == 1) nowGoes = 2;
 			else nowGoes = 1;
 
-			//После каждого хода рисуем игровое поле
-			for (int i = 0; i < 3; i++) {
-				for (int j = 0; j < 3; j++) {
-					cout << field[i][j];
-				}
-				cout << endl;
-			}
-
-			cout << "Move: " << move << "\tCheckFinish: " << checkFinish() << endl;
-
 		}
-		
-		cout << "Winner: " << checkWinner() << endl;
+
+		cout << "Game #" << g << "\t\tWrong choices of AI: " << wrongChoice << endl;
 
 	}
 

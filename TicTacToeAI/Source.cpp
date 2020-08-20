@@ -1,6 +1,7 @@
 #include<iostream>
 #include<fstream>
 #include<time.h>
+#include<vector>
 using namespace std;
 
 //Gaming field
@@ -257,6 +258,10 @@ public:
 	}
 };
 
+struct fieldCopy {
+	int field[3][3];
+};
+
 int main() {
 
 	srand(time(0));
@@ -268,7 +273,20 @@ int main() {
 	string af[ln] = { "-", "relu", "softmax" };	//Активационные функции нейросети
 	nn player(ln, arch, af);	//Создаем "мозг" игрока
 
-	player.New();				//Генерируем веса 
+	player.New();				//Генерируем веса
+
+
+	//В такие векторы мы сохраняем состояние поля, при котором походил игрок
+	//для дальнейшего обучения ИИ
+
+	vector<fieldCopy> player1Fields;
+	vector<fieldCopy> player2Fields;
+
+	//В такие векторы мы сохраняем ход игрока для определенного состояния поля
+
+	vector<int> player1Moves;
+	vector<int> player2Moves;
+
 
 	for (int g = 0; g < gamesN; g++) {	//Для каждой игры
 

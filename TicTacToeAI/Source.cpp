@@ -261,11 +261,11 @@ int main() {
 
 	srand(time(0));
 
-	int gamesN = 10;	//Количество игр
+	int gamesN = 1000;	//Количество игр
 
 	const int ln = 2;		//Количество слоев нейросети
 	int arch[ln] = { 9, 9 };	//Архитектура нейросети
-	string af[ln] = { "relu" };	//Активационные функции нейросети
+	string af[ln] = { "-", "softmax" };	//Активационные функции нейросети
 	nn player(ln, arch, af);	//Создаем "мозг" игрока
 
 	player.New();				//Генерируем веса 
@@ -323,18 +323,24 @@ int main() {
 			if (field[maxValueIndex / 3][maxValueIndex % 3] != 0) {
 				//Если выбрали занятую клеточку
 				while (field[maxValueIndex / 3][maxValueIndex % 3] != 0) {
+
+					cout << "Wrong cell! ";
+
 					//Пока выбираем занятую клеточку, тренируем нейросеть
 					//не выбирать занятые клеточки
 
 					//Для этого указываем правильные ответы
 					double answers[9];
 					for (int i = 0; i < 9; i++) {
-						if (field[i / 3][i % 3] != 0) answers[i] = 0;
-						else answers[i] = 1.0 / double(9 - move);
+						if (field[i / 3][i % 3] != 0) answers[i] = 0.0;
+						else answers[i] = 1.0 / double(9.0 - move);
 					}
+
+
 					//Теперь обучаем нейросеть ходить на пустые клеточки
-					player.BackPropogation(answers, 0.001);
+					player.BackPropogation(answers, 0.1);
 					player.ForwardFeed(input);
+					player.GetPrediction(result);
 
 					maxValue = 0.0;
 

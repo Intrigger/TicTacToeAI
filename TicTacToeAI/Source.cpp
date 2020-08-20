@@ -377,9 +377,25 @@ int main() {
 				}
 			}
 
+			//Добавляем текущее состояние поля к вектору полей игрока
+			//и добавляем его ход к вектору ходов
+			if (nowGoes == 1) {
+				fieldCopy copy;
+				for (int i = 0; i < 9; i++) copy.field[i / 3][i % 3] = field[i / 3][i % 3];
+				player1Fields.push_back(copy);
+				player1Moves.push_back(maxValueIndex);
+			}
+			if (nowGoes == 2) {
+				fieldCopy copy;
+				for (int i = 0; i < 9; i++) copy.field[i / 3][i % 3] = field[i / 3][i % 3];
+				player2Fields.push_back(copy);
+				player2Moves.push_back(maxValueIndex);
+			}
+
+
 			//Если мы тут, то выбрали свободную клеточку
 			//значит, мы можем ходить уже
-			
+
 			field[maxValueIndex / 3][maxValueIndex % 3] = nowGoes;
 			
 			if (nowGoes == 1) nowGoes = 2;

@@ -2,7 +2,10 @@
 #include<fstream>
 #include<time.h>
 #include<vector>
+#include<SFML/Graphics.hpp>
+
 using namespace std;
+using namespace sf;
 
 //Gaming field
 int field[3][3] = { {0, 0, 0},
@@ -267,7 +270,7 @@ int main() {
 
 	srand(time(0));
 
-	int gamesN = pow(10, 7);	//Количество игр
+	int gamesN = pow(10, 3);	//Количество игр
 
 	const int ln = 2;		//Количество слоев нейросети
 	int arch[ln] = { 9, 9 };	//Архитектура нейросети
@@ -520,7 +523,47 @@ int main() {
 	
 	player.SaveWeights("weights_tic_tac_toe.txt");
 
+	//Играем против ИИ
 
+	//Загружаем текстуры
+
+	Texture circlePlayerTexture;
+	circlePlayerTexture.loadFromFile("Textures/circle.png");
+
+	Texture squarePlayerTexture;
+	squarePlayerTexture.loadFromFile("Textures/square.png");
+
+	Texture fieldTexture;
+	fieldTexture.loadFromFile("Textures/field.png");
+
+	//Создаем спрайты
+
+	Sprite circlePlayerSprite;
+	circlePlayerSprite.setTexture(circlePlayerTexture);
+	
+	Sprite squarePlayerSprite;
+	squarePlayerSprite.setTexture(squarePlayerTexture);
+
+	Sprite fieldSprite;
+	fieldSprite.setTexture(fieldTexture);
+
+	//Создаем окно
+
+	RenderWindow window(VideoMode(400, 432), "Tic Tac Toe AI v0.1");
+
+	while (window.isOpen())
+	{
+		Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == Event::Closed)
+				window.close();
+		}
+
+		window.clear();
+		window.draw(fieldSprite);
+		window.display();
+	}
 
 
 	return 0;

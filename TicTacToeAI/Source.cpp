@@ -288,6 +288,10 @@ int main() {
 	vector<int> player1Moves;
 	vector<int> player2Moves;
 
+	int playsInADraw = 0;	//колчество игр вничью
+	int player1wins = 0;	//количество игр, выигранных игроком №1
+	int player2wins = 0;	//игроком №2
+
 	int wrongChoice = 0;		//счетчик того, сколько раз ИИ выбрал занятую клеточку
 	for (int g = 0; g < gamesN; g++) {	//Для каждой игры
 
@@ -419,6 +423,9 @@ int main() {
 		//После окончания партии узнаем имя победителя:
 		int winner = checkWinner();
 		
+		if (winner == 0) playsInADraw++;
+		if (winner == 1) player1wins++;
+		if (winner == 2) player2wins++;
 		//Если это не ничья, то исправляем веса - тренируем ИИ:
 		if ((wrongChoice == 0)) {
 
@@ -503,7 +510,18 @@ int main() {
 
 	}
 
+	//Выводим статистику по игре:
+
+	cout << "Plays in a draw: " << playsInADraw << endl;
+	cout << "Player 1 wins: " << player1wins << endl;
+	cout << "Player 2 wins: " << player2wins << endl;
+
+	//Сохраняем веса нейросети
+	
 	player.SaveWeights("weights_tic_tac_toe.txt");
+
+
+
 
 	return 0;
 }

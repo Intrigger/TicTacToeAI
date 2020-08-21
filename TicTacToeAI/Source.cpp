@@ -556,6 +556,22 @@ int main() {
 
 	RenderWindow window(VideoMode(400, 432), "Tic Tac Toe AI v0.1");
 
+	int now_goes = rand() % 2 + 1;	//Определяем, кто ходит первым
+
+	//Пусть ИИ играет всегда за кружочек, то есть ИИ - игрок 1
+	
+	//Очищаем окно консоли от какой-либо информации
+
+	system("cls");
+
+	//Добавим текст о состоянии игры
+	Font font;
+	font.loadFromFile("Fonts/font.ttf");
+	Text indicator("", font, 25);
+
+	//Устанавливаем нужную позицию для текста
+	indicator.setPosition(0, 0);
+
 	while (window.isOpen())
 	{
 		Event event;
@@ -567,6 +583,21 @@ int main() {
 
 		window.draw(fieldSprite); //Рисуем поле
 		
+		//Присваиваем нужную строку индикатору
+
+		if (now_goes == 1) {
+			indicator.setString("AI goes now!");
+		}
+		else {
+			indicator.setString("It`s your turn now!");
+		}
+
+		//Рисуем текст-индикатор
+
+		window.draw(indicator);
+
+
+
 		//Теперь рисуем крестики и нолики
 
 		for (int i = 0; i < 3; i++) {

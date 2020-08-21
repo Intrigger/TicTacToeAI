@@ -267,11 +267,11 @@ int main() {
 
 	srand(time(0));
 
-	int gamesN = pow(10, 9);	//Количество игр
+	int gamesN = pow(10, 7);	//Количество игр
 
-	const int ln = 3;		//Количество слоев нейросети
-	int arch[ln] = { 9, 81, 9 };	//Архитектура нейросети
-	string af[ln] = { "-", "relu", "softmax" };	//Активационные функции нейросети
+	const int ln = 2;		//Количество слоев нейросети
+	int arch[ln] = { 9, 9 };	//Архитектура нейросети
+	string af[ln] = { "-", "softmax" };	//Активационные функции нейросети
 	nn player(ln, arch, af);	//Создаем "мозг" игрока
 
 	player.New();				//Генерируем веса
@@ -288,7 +288,7 @@ int main() {
 	vector<int> player1Moves;
 	vector<int> player2Moves;
 
-
+	int wrongChoice = 0;		//счетчик того, сколько раз ИИ выбрал занятую клеточку
 	for (int g = 0; g < gamesN; g++) {	//Для каждой игры
 
 		//Очищаем fields и moves
@@ -299,7 +299,7 @@ int main() {
 		player2Moves.clear();
 
 
-		int wrongChoice = 0;	//счетчик того, сколько раз ИИ выбрал занятую клеточку
+
 
 		//Копируем наше поле, т.к. новая игра		
 		for (int i = 0; i < 3; i++) {
@@ -412,8 +412,10 @@ int main() {
 
 		}
 
-		if (g % 500 == 0) cout << "Game #" << g << "\tWrong choices of AI: " << wrongChoice << "\tWinner: " << checkWinner() << endl;
-
+		if (g % 1000 == 0) {
+			cout << "Game #" << g << "\tWrong choices of AI: " << wrongChoice << "\tWinner: " << checkWinner() << endl;
+			wrongChoice = 0;
+		}
 		//После окончания партии узнаем имя победителя:
 		int winner = checkWinner();
 		

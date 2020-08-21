@@ -361,7 +361,6 @@ int main() {
 				//Если выбрали занятую клеточку
 				while (field[maxValueIndex / 3][maxValueIndex % 3] != 0) {
 
-					//cout << "Wrong choice!\n";
 					wrongChoice++;
 
 					//Пока выбираем занятую клеточку, тренируем нейросеть
@@ -413,16 +412,14 @@ int main() {
 			//значит, мы можем ходить уже
 
 			field[maxValueIndex / 3][maxValueIndex % 3] = nowGoes;
-			
+
 			if (nowGoes == 1) nowGoes = 2;
 			else nowGoes = 1;
 
 		}
 
-		if (g % 1000 == 0) {
-			cout << "Game #" << g << "\tWrong choices of AI: " << wrongChoice << "\tWinner: " << checkWinner() << endl;
-			wrongChoice = 0;
-		}
+		//cout << "Game #" << g << "\tWrong choices of AI: " << wrongChoice << "\tWinner: " << checkWinner() << endl;
+		wrongChoice = 0;
 		//После окончания партии узнаем имя победителя:
 		int winner = checkWinner();
 		
@@ -523,8 +520,16 @@ int main() {
 	
 	player.SaveWeights("weights_tic_tac_toe.txt");
 
-	//Играем против ИИ
+	//Копируем наше поле, т.к. новая игра		
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			field[i][j] = origin_field[i][j];
+		}
+	}
 
+
+	//Играем против ИИ
+	//Игрок 1 - кружочек, 2 - квадрат
 	//Загружаем текстуры
 
 	Texture circlePlayerTexture;
@@ -560,8 +565,26 @@ int main() {
 				window.close();
 		}
 
-		window.clear();
-		window.draw(fieldSprite);
+		window.draw(fieldSprite); //Рисуем поле
+		
+		//Теперь рисуем крестики и нолики
+
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				if ((field[i][j] == 2)) {
+					squarePlayerSprite.setPosition(i* (128 + 8), j* (128 + 8) + 32);
+					window.draw(squarePlayerSprite);
+				}
+				if (field[i][j] == 1) {
+					circlePlayerSprite.setPosition(i* (128 + 8), j* (128 + 8) + 32);
+					window.draw(circlePlayerSprite);
+				}
+			}
+		}
+
+
+
+
 		window.display();
 	}
 

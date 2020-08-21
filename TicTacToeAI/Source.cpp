@@ -39,21 +39,22 @@ bool checkFinish() {	//Функция проверяет, окончена ли 
 
 int checkWinner() {
 	for (int j = 0; j < 3; j++) {
-		if ((field[j][0] == field[j][1] == field[j][2]) and (field[j][0] != 0)) {
+		if ((field[j][0] == field[j][1]) and (field[j][0] == field[j][2]) and (field[j][1] == field[j][2]) and (field[j][0] != 0)) {
 			return field[j][0];
 		}
-		if ((field[0][j] == field[1][j] == field[2][j]) and (field[0][j] != 0)) {
+		if ((field[0][j] == field[1][j]) and (field[0][j] == field[2][j]) and (field[1][j] == field[2][j]) and (field[0][j] != 0)) {
 			return field[0][j];
 		}
 	}
 
-	if ((field[0][0] == field[1][1] == field[2][2]) and (field[0][0] != 0)) {
+	if ((field[0][0] == field[1][1]) and (field[0][0] == field[2][2]) and (field[1][1] == field[2][2]) and (field[0][0] != 0)) {
 		return field[0][0];
 	}
 
-	if ((field[0][2] == field[1][1] == field[2][0]) and (field[0][2] != 0)) {
+	if ((field[0][2] == field[1][1]) and (field[0][2] == field[2][0]) and (field[1][1] == field[2][0]) and (field[0][2] != 0)) {
 		return field[0][2];
 	}
+	return 0;
 }
 
 class nn {
@@ -118,7 +119,7 @@ public:
 		long long counter = 0;
 		for (int i = 0; i < layersN - 1; i++) {
 			for (int j = 0; j < arch[i] * arch[i + 1]; j++) {
-				weights[counter] = (double(rand() % 201 - 100) / 100.0) / double(arch[i + 1]);
+				weights[counter] = (double(rand() % 101) / 100.0) / double(arch[i + 1]);
 				counter++;
 			}
 		}
@@ -134,7 +135,7 @@ public:
 		if (activationFunctions[layer] == "relu") {
 			for (int i = valuesC; i < valuesC + arch[layer]; i++) {
 				if (values[i] < 0) values[i] *= 0.01;
-				else values[i] = values[i];
+				else values[i] = values[i] * 0.1;
 			}
 		}
 		if (activationFunctions[layer] == "softmax") {
@@ -159,7 +160,7 @@ public:
 		if (activationFunctions[layer] == "relu") {
 			for (int i = 0; i < arch[layer]; i++) {
 				if (values[i + ecounter] < 0) values[i] = 0.01;
-				else values[i + ecounter] = 1;
+				else values[i + ecounter] = 0.1;
 				value[i] *= values[ecounter + i];
 			}
 		}
@@ -266,7 +267,7 @@ int main() {
 
 	srand(time(0));
 
-	int gamesN = 1000;	//Количество игр
+	int gamesN = pow(10, 9);	//Количество игр
 
 	const int ln = 3;		//Количество слоев нейросети
 	int arch[ln] = { 9, 81, 9 };	//Архитектура нейросети
@@ -289,6 +290,14 @@ int main() {
 
 
 	for (int g = 0; g < gamesN; g++) {	//Для каждой игры
+
+		//Очищаем fields и moves
+		player1Fields.clear();
+		player2Fields.clear();
+
+		player1Moves.clear();
+		player2Moves.clear();
+
 
 		int wrongChoice = 0;	//счетчик того, сколько раз ИИ выбрал занятую клеточку
 
@@ -345,6 +354,7 @@ int main() {
 				//Если выбрали занятую клеточку
 				while (field[maxValueIndex / 3][maxValueIndex % 3] != 0) {
 
+					//cout << "Wrong choice!\n";
 					wrongChoice++;
 
 					//Пока выбираем занятую клеточку, тренируем нейросеть
@@ -373,7 +383,6 @@ int main() {
 							maxValueIndex = i;
 						}
 					}
-
 				}
 			}
 
@@ -403,10 +412,96 @@ int main() {
 
 		}
 
-		cout << "Game #" << g << "\t\tWrong choices of AI: " << wrongChoice << endl;
+		if (g % 500 == 0) cout << "Game #" << g << "\tWrong choices of AI: " << wrongChoice << "\tWinner: " << checkWinner() << endl;
+
+		//После окончания партии узнаем имя победителя:
+		int winner = checkWinner();
+		
+		//Если это не ничья, то исправляем веса - тренируем ИИ:
+		if ((wrongChoice == 0)) {
+
+			//Скорость обучения
+			double learningRate = 0.01;
+
+			if ((winner == 1) or (winner == 0)){
+				//Если победил игрок №1, то
+				//у игрока 2 исправляем его решение на 0, а остальные делаем одинаковыми
+
+				for (int i = 0; i < player2Moves.size(); i++) {
+
+					//Прогоняем нейросеть через нужную карту 
+
+					double input[9];
+
+					for (int j = 0; j < 9; j++) {
+						if (player2Fields[i].field[j / 3][j % 3] == 0) input[i] = 0.0;
+						if (player2Fields[i].field[j / 3][j % 3] == 1) input[i] = -1.0;
+						if (player2Fields[i].field[j / 3][j % 3] == 2) input[i] = 1.0;
+					}
+
+					player.ForwardFeed(input);
+
+					double answers[9];
+					
+					//Считаем количество пустых клеточек
+
+					int emptyCellCounter = 0;
+
+					for (int j = 0; j < 9; j++) {
+						if (player2Fields[i].field[j / 3][j % 3] == 0) emptyCellCounter++;
+					}
+
+					//Вычисляем правильные ответы
+					for (int j = 0; j < 9; j++) {
+						if ((j == player2Moves[i]) or (player2Fields[i].field[j / 3][j % 3] != 0)) answers[j] = 0.0;
+						else answers[j] = 1.0 /	double(emptyCellCounter - 1);
+					}
+
+					player.BackPropogation(answers, learningRate);
+				}
+			}
+			if ((winner == 2) or (winner == 0)) {
+				//Если победил игрок №2, то
+				//у игрока 1 исправляем его решение на 0, а остальные делаем одинаковыми
+
+				for (int i = 0; i < player1Moves.size(); i++) {
+
+					//Прогоняем нейросеть через нужную карту 
+
+					double input[9];
+
+					for (int j = 0; j < 9; j++) {
+						if (player1Fields[i].field[j / 3][j % 3] == 0) input[i] = 0.0;
+						if (player1Fields[i].field[j / 3][j % 3] == 1) input[i] = 1.0;
+						if (player1Fields[i].field[j / 3][j % 3] == 2) input[i] = -1.0;
+					}
+
+					player.ForwardFeed(input);
+
+					double answers[9];
+
+					//Считаем количество пустых клеточек
+
+					int emptyCellCounter = 0;
+
+					for (int j = 0; j < 9; j++) {
+						if (player1Fields[i].field[j / 3][j % 3] == 0) emptyCellCounter++;
+					}
+
+					//Вычисляем правильные ответы
+					for (int j = 0; j < 9; j++) {
+						if ((j == player1Moves[i]) or (player1Fields[i].field[j / 3][j % 3] != 0)) answers[j] = 0.0;
+						else answers[j] = 1.0 / double(emptyCellCounter - 1);
+					}
+
+					player.BackPropogation(answers, learningRate);
+				}
+			}
+		}
 
 	}
 
+	player.SaveWeights("weights_tic_tac_toe.txt");
 
 	return 0;
 }

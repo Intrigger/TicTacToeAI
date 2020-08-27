@@ -4,13 +4,18 @@ C:\Users\Intrigger\Documents\GitHub\TicTacToeAI\TicTacToeAI\Source.cpp(116,13): 
 C:\Users\Intrigger\Documents\GitHub\TicTacToeAI\TicTacToeAI\Source.cpp(196,8): warning C4244: аргумент: преобразование "__int64" в "int", возможна потеря данных
 C:\Users\Intrigger\Documents\GitHub\TicTacToeAI\TicTacToeAI\Source.cpp(215,9): warning C4244: инициализация: преобразование "__int64" в "int", возможна потеря данных
 C:\Users\Intrigger\Documents\GitHub\TicTacToeAI\TicTacToeAI\Source.cpp(245,11): warning C4244: аргумент: преобразование "__int64" в "int", возможна потеря данных
-C:\Users\Intrigger\Documents\GitHub\TicTacToeAI\TicTacToeAI\Source.cpp(273,12): warning C4244: аргумент: преобразование "time_t" в "unsigned int", возможна потеря данных
-C:\Users\Intrigger\Documents\GitHub\TicTacToeAI\TicTacToeAI\Source.cpp(275,13): warning C4244: инициализация: преобразование "double" в "int", возможна потеря данных
-C:\Users\Intrigger\Documents\GitHub\TicTacToeAI\TicTacToeAI\Source.cpp(378,51): warning C4305: аргумент: усечение из "double" в "float"
-C:\Users\Intrigger\Documents\GitHub\TicTacToeAI\TicTacToeAI\Source.cpp(463,49): warning C4244: аргумент: преобразование "double" в "float", возможна потеря данных
+C:\Users\Intrigger\Documents\GitHub\TicTacToeAI\TicTacToeAI\Source.cpp(285,12): warning C4244: аргумент: преобразование "time_t" в "unsigned int", возможна потеря данных
+C:\Users\Intrigger\Documents\GitHub\TicTacToeAI\TicTacToeAI\Source.cpp(287,13): warning C4244: инициализация: преобразование "double" в "int", возможна потеря данных
+C:\Users\Intrigger\Documents\GitHub\TicTacToeAI\TicTacToeAI\Source.cpp(393,51): warning C4305: аргумент: усечение из "double" в "float"
+C:\Users\Intrigger\Documents\GitHub\TicTacToeAI\TicTacToeAI\Source.cpp(478,49): warning C4244: аргумент: преобразование "double" в "float", возможна потеря данных
+C:\Users\Intrigger\Documents\GitHub\TicTacToeAI\TicTacToeAI\Source.cpp(596,67): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+C:\Users\Intrigger\Documents\GitHub\TicTacToeAI\TicTacToeAI\Source.cpp(596,40): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+C:\Users\Intrigger\Documents\GitHub\TicTacToeAI\TicTacToeAI\Source.cpp(600,67): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+C:\Users\Intrigger\Documents\GitHub\TicTacToeAI\TicTacToeAI\Source.cpp(600,40): warning C4244: аргумент: преобразование "int" в "float", возможна потеря данных
+C:\Users\Intrigger\Documents\GitHub\TicTacToeAI\TicTacToeAI\Source.cpp(657,51): warning C4305: аргумент: усечение из "double" в "float"
   Создание кода
-  1 of 360 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    1 functions had inline decision re-evaluated but remain unchanged
   Создание кода завершено
+  0 of 344 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
   TicTacToeAI.vcxproj -> C:\Users\Intrigger\Documents\GitHub\TicTacToeAI\TicTacToeAI\x64\Release\TicTacToeAI.exe

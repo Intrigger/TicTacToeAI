@@ -3,6 +3,7 @@
 #include<time.h>
 #include<vector>
 #include<SFML/Graphics.hpp>
+#include<Windows.h>
 
 using namespace std;
 using namespace sf;
@@ -270,11 +271,11 @@ int main() {
 
 	srand(time(0));
 
-	int gamesN = pow(10, 3);	//Количество игр
+	int gamesN = pow(10, 6);	//Количество игр
 
-	const int ln = 2;		//Количество слоев нейросети
-	int arch[ln] = { 9, 9 };	//Архитектура нейросети
-	string af[ln] = { "-", "softmax" };	//Активационные функции нейросети
+	const int ln = 4;		//Количество слоев нейросети
+	int arch[ln] = { 9, 81, 81, 9 };	//Архитектура нейросети
+	string af[ln] = { "-", "relu", "relu", "softmax" };	//Активационные функции нейросети
 	nn player(ln, arch, af);	//Создаем "мозг" игрока
 
 	player.New();				//Генерируем веса
@@ -360,7 +361,6 @@ int main() {
 			if (field[maxValueIndex / 3][maxValueIndex % 3] != 0) {
 				//Если выбрали занятую клеточку
 				while (field[maxValueIndex / 3][maxValueIndex % 3] != 0) {
-
 					wrongChoice++;
 
 					//Пока выбираем занятую клеточку, тренируем нейросеть
@@ -420,6 +420,7 @@ int main() {
 
 		//cout << "Game #" << g << "\tWrong choices of AI: " << wrongChoice << "\tWinner: " << checkWinner() << endl;
 		wrongChoice = 0;
+		
 		//После окончания партии узнаем имя победителя:
 		int winner = checkWinner();
 		
@@ -430,9 +431,9 @@ int main() {
 		if ((wrongChoice == 0)) {
 
 			//Скорость обучения
-			double learningRate = 0.01;
+			double learningRate = 0.001;
 
-			if ((winner == 1) or (winner == 0)){
+			if ((winner == 1)){
 				//Если победил игрок №1, то
 				//у игрока 2 исправляем его решение на 0, а остальные делаем одинаковыми
 
@@ -469,7 +470,7 @@ int main() {
 					player.BackPropogation(answers, learningRate);
 				}
 			}
-			if ((winner == 2) or (winner == 0)) {
+			if ((winner == 2)) {
 				//Если победил игрок №2, то
 				//у игрока 1 исправляем его решение на 0, а остальные делаем одинаковыми
 
@@ -556,7 +557,7 @@ int main() {
 
 	RenderWindow window(VideoMode(400, 432), "Tic Tac Toe AI v0.1");
 
-	int now_goes = rand() % 2 + 1;	//Определяем, кто ходит первым
+	int nowGoes = rand() % 2 + 1;	//Определяем, кто ходит первым
 
 	//Пусть ИИ играет всегда за кружочек, то есть ИИ - игрок 1
 	
@@ -572,51 +573,172 @@ int main() {
 	//Устанавливаем нужную позицию для текста
 	indicator.setPosition(0, 0);
 
-	while (window.isOpen())
+	gamesN = 10;	//Количество игр против компьютера
+
+	for (int g = 0; g < gamesN; g++)
 	{
+		//Копируем наше поле, т.к. новая игра		
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				field[i][j] = origin_field[i][j];
+			}
+		}
 		Event event;
-		while (window.pollEvent(event))
+		if  (window.pollEvent(event))
 		{
 			if (event.type == Event::Closed)
 				window.close();
 		}
 
-		window.draw(fieldSprite); //Рисуем поле
-		
-		//Присваиваем нужную строку индикатору
-
-		if (now_goes == 1) {
-			indicator.setString("AI goes now!");
-		}
-		else {
-			indicator.setString("It`s your turn now!");
-		}
-
-		//Рисуем текст-индикатор
-
-		window.draw(indicator);
 
 
 
-		//Теперь рисуем крестики и нолики
+		for (int move = 0; (move < 9) and (!checkFinish()); move++) {
 
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
-				if ((field[i][j] == 2)) {
-					squarePlayerSprite.setPosition(i* (128 + 8), j* (128 + 8) + 32);
-					window.draw(squarePlayerSprite);
+			//Присваиваем нужную строку индикатору
+
+			if (nowGoes == 1) {
+				indicator.setString("AI goes now!");
+			}
+			else {
+				indicator.setString("It`s your turn now!");
+			}
+
+			//Рисуем текст-индикатор
+			window.draw(fieldSprite); //Рисуем поле
+			window.draw(indicator);
+
+			//Теперь рисуем крестики и нолики
+
+
+			for (int i = 0; i < 3; i++) {
+				for (int j = 0; j < 3; j++) {
+					if ((field[i][j] == 2)) {
+						squarePlayerSprite.setPosition(j * (128 + 8), i * (128 + 8) + 32);
+						window.draw(squarePlayerSprite);
+					}
+					if (field[i][j] == 1) {
+						circlePlayerSprite.setPosition(j * (128 + 8), i * (128 + 8) + 32);
+						window.draw(circlePlayerSprite);
+					}
+					cout << field[i][j];
 				}
-				if (field[i][j] == 1) {
-					circlePlayerSprite.setPosition(i* (128 + 8), j* (128 + 8) + 32);
-					window.draw(circlePlayerSprite);
+				cout << endl;
+			}
+			cout << endl;
+
+			window.display();
+
+			if (nowGoes == 1) {	//Если ходит ИИ
+				double input[9];
+				for (int i = 0; i < 9; i++) {
+					if (field[i / 3][i % 3] == 0) input[i] = 0.0;
+					if (field[i / 3][i % 3] == 1) input[i] = 1.0;
+					if (field[i / 3][i % 3] == 2) input[i] = -1.0;
+				}
+				player.ForwardFeed(input);	//Загружаем данные в сеть
+
+				double result[9];	//Сюда будем получать результат нейросети
+
+				player.GetPrediction(result);	//Получаем резульаты от сети
+
+				//Теперь ищем максимальное значение и его индекс,
+				//который будет значить, в какую клеточку походить
+
+				double maxValue = 0.0;
+				int maxValueIndex = 0;
+
+				for (int i = 0; i < 9; i++) {
+					if (maxValue < result[i]) {
+						maxValue = result[i];
+						maxValueIndex = i;
+					}
+				}
+
+				//Теперь нужно проверить, занята ли эта клеточка
+
+				if (field[maxValueIndex / 3][maxValueIndex % 3] != 0) {
+					//Если выбрали занятую клеточку
+					while (field[maxValueIndex / 3][maxValueIndex % 3] != 0) {
+
+						wrongChoice++;
+
+						//Пока выбираем занятую клеточку, тренируем нейросеть
+						//не выбирать занятые клеточки
+
+						//Для этого указываем правильные ответы
+						double answers[9];
+						for (int i = 0; i < 9; i++) {
+							if (field[i / 3][i % 3] != 0) answers[i] = 0.0;
+							else answers[i] = 1.0 / double(9.0 - move);
+						}
+
+
+						//Теперь обучаем нейросеть ходить на пустые клеточки
+						player.BackPropogation(answers, 0.1);
+						player.ForwardFeed(input);
+						player.GetPrediction(result);
+
+						maxValue = 0.0;
+
+						maxValueIndex = 0;
+
+						for (int i = 0; i < 9; i++) {
+							if (maxValue < result[i]) {
+								maxValue = result[i];
+								maxValueIndex = i;
+							}
+						}
+					}
+				}
+
+				//Закрашиваем клеточку
+				field[maxValueIndex / 3][maxValueIndex % 3] = nowGoes;
+
+			}
+
+			if (nowGoes == 2) {	//Если ходит человек
+				bool choseEmpty = 0;	//Переменная отвечает за то, выбра ли человек пустую клеточку
+				while (!choseEmpty) {
+					//Пока человек не выберет пустую клеточку,
+					//будет выбирать клеточку
+					if (Mouse::isButtonPressed(Mouse::Left)) {
+						//Если нажата левая клавиша мыши, то
+						//проверяем, попадает ли человек на пустую клеточку
+
+						int mouseX, mouseY;
+						
+						//Получаем координаты курсора относительно окна
+						
+						mouseX = Mouse::getPosition().x - window.getPosition().x;
+						mouseY = Mouse::getPosition().y - window.getPosition().y - 32;
+
+						//Проверяем, занята ли эта клеточка
+						
+						if (field[(mouseY - 32) / 136][mouseX / 136] == 0) {
+							field[(mouseY - 32) / 136][mouseX / 136] = 2;
+							cout << "You chose empty cell!\n";
+							choseEmpty = true;
+						}
+						else {
+							indicator.setString("Please, choose empty cell!");
+						}
+					}
 				}
 			}
+
+			
+
+			if (nowGoes == 1) Sleep(500);
+
+			if (nowGoes == 1) nowGoes = 2;
+			else nowGoes = 1;
 		}
+		
+		window.clear();
 
 
 
-
-		window.display();
 	}
 
 

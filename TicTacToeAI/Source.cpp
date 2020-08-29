@@ -9,6 +9,10 @@ using namespace std;
 using namespace sf;
 
 //Gaming field
+
+double emptyCellValue = 0.1;
+
+
 int field[3][3] = { {0, 0, 0},
 					{0, 0, 0},
 					{0, 0, 0} };
@@ -287,8 +291,8 @@ int main() {
 	int gamesN = pow(10, 6);	//Количество игр
 
 	const int ln = 3;		//Количество слоев ней	осети
-	int arch[ln] = { 9, 24, 9 };	//Архитектура нейросети
-	string af[ln] = { "-",  "relu", "softmax" };	//Активационные функции нейросети
+	int arch[ln] = { 9, 81, 9 };	//Архитектура нейросети
+	string af[ln] = { "-", "relu", "softmax" };	//Активационные функции нейросети
 	nn players[2];	//создаем 2 нейросети
 
 	bool loadWeights = false;
@@ -342,12 +346,12 @@ int main() {
 			//Заполняем их в зависимости от того, какой игрок ходит 
 			for (int i = 0; i < 9; i++) {
 				if (nowGoes == 0) {
-					if (field[i / 3][i % 3] == 0) input[i] = 0.0;
+					if (field[i / 3][i % 3] == 0) input[i] = emptyCellValue;
 					if (field[i / 3][i % 3] == 1) input[i] = 1.0;
 					if (field[i / 3][i % 3] == 2) input[i] = -1.0;
 				}
 				else {
-					if (field[i / 3][i % 3] == 0) input[i] = 0.0;
+					if (field[i / 3][i % 3] == 0) input[i] = emptyCellValue;
 					if (field[i / 3][i % 3] == 1) input[i] = -1.0;
 					if (field[i / 3][i % 3] == 2) input[i] = 1.0;
 				}
@@ -427,9 +431,11 @@ int main() {
 
 		}
 
-		//cout << "Game #" << g << "\tWrong choices of AI: " << wrongChoice << "\tWinner: " << checkWinner() << endl;
-		wrongChoice = 0;
-		
+		if (g % 1000 == 0) {
+			cout << "Game #" << g << "\tWrong choices of AI: " << wrongChoice << "\tWinner: " << checkWinner() << endl;
+			wrongChoice = 0;
+		}
+
 		//После окончания партии узнаем имя победителя:
 		int winner = checkWinner();
 		
@@ -456,7 +462,7 @@ int main() {
 				double input[9];
 
 				for (int j = 0; j < 9; j++) {
-					if (playerFields[winner][i].field[j / 3][j % 3] == 0) input[i] = 0.0;
+					if (playerFields[winner][i].field[j / 3][j % 3] == 0) input[i] = emptyCellValue;
 					else {
 						if (playerFields[winner][i].field[j / 3][j % 3] == winner) input[i] = 1.0;
 						else {
@@ -556,6 +562,7 @@ int main() {
 
 	for (int g = 0; g < gamesN; g++)
 	{
+		wrongChoice = 0;
 		//Копируем наше поле, т.к. новая игра		
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
@@ -611,7 +618,7 @@ int main() {
 			if (nowGoes == 1) {	//Если ходит ИИ
 				double input[9];
 				for (int i = 0; i < 9; i++) {
-					if (field[i / 3][i % 3] == 0) input[i] = 0.0;
+					if (field[i / 3][i % 3] == 0) input[i] = emptyCellValue;
 					if (field[i / 3][i % 3] == 1) input[i] = 1.0;
 					if (field[i / 3][i % 3] == 2) input[i] = -1.0;
 				}
@@ -670,7 +677,7 @@ int main() {
 						}
 					}
 				}
-
+				cout << "Wrong choices: " << wrongChoice << endl;
 				//Закрашиваем клеточку
 				field[maxValueIndex / 3][maxValueIndex % 3] = nowGoes;
 
